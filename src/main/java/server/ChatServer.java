@@ -23,6 +23,7 @@ public class ChatServer {
     private static final ExecutorService clientHandlers = Executors.newCachedThreadPool();
     private static final List<ClientHandler> clients = new CopyOnWriteArrayList<>();
     private static boolean keepRunning = true;
+    private static ClientHandler clientToExclude;
     private static ServerSocket serverSocket;
     private String ip;
     private int port;
@@ -66,16 +67,22 @@ public class ChatServer {
     }
 
     void sendMulticast(String message) {
-        clients.forEach(client -> client.sendMessage(message));
-        clients.forEach(new Consumer<ClientHandler>() {
-            public void accept(ClientHandler handler) {
 
-            }
-        });
+//        clients.forEach(client -> client.sendMessage(message));
+//        clients.forEach(new Consumer<ClientHandler>() {
+//            public void accept(ClientHandler handler) {
+//
+//            }
+//        });
 
-//        for (ClientHandler handler : clients) {
-//            handler.sendMessage(message);
-//        }
+        for (ClientHandler handler : clients) {
+            if(handler != clientToExclude)
+            handler.sendMessage(message);
+        }
+    }
+
+    void excludeClient(ClientHandler client) {
+        clientToExclude = client;
     }
 
     void removeHandler(ClientHandler handler) {

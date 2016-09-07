@@ -47,12 +47,17 @@ public class ClientHandler implements Runnable {
                     continue;
                 } else if (message.equals(ProtocolStrings.STOP)) {
                     break;
+                    
+                    
+                } else if(message.equals(ProtocolStrings.STOP_SERVER))
+                {
+                    System.out.println("Trying to close server");
                 }
+                server.excludeClient(this);
                 server.sendMulticast(message.toUpperCase());
             }
         } finally {
             try {
-                writer.println(ProtocolStrings.STOP);//Echo the stop message back to the client for a nice closedown
                 socket.close();
                 server.removeHandler(this);
                 System.out.println("Closed a Connection");
