@@ -24,18 +24,27 @@ public class ClientHandler implements Runnable {
     private final PrintWriter writer;
     private final ChatServer server;
     private final Scanner input;
+    private final String login;
 
-    public ClientHandler(Socket socket, Scanner input, PrintWriter writer, ChatServer server) {
+
+    public ClientHandler(Socket socket, Scanner input, PrintWriter writer, ChatServer server, String login) {
         this.socket = socket;
         this.writer = writer;
         this.server = server;
         this.input = input;
+        this.login = login;
     }
 
     public static ClientHandler handle(Socket socket, ChatServer server) throws IOException {
         Scanner input = new Scanner(socket.getInputStream());
         PrintWriter writer = new PrintWriter(socket.getOutputStream(), true);
-        return new ClientHandler(socket, input, writer, server);
+        writer.println("---------------------------");
+        writer.println("---------Welcome-----------");
+        writer.println("LOGIN: ");
+        String login = input.nextLine();
+        writer.println("---------------------------");
+        writer.println("-*Logged in as "+login+"*-");
+        return new ClientHandler(socket, input, writer, server, login);
     }
 
     public void run() {
@@ -47,14 +56,12 @@ public class ClientHandler implements Runnable {
                     continue;
                 } else if (message.equals(ProtocolStrings.STOP)) {
                     break;
-                    
-                    
-                } else if(message.equals(ProtocolStrings.STOP_SERVER))
-                {
+                } else if (message.equals(ProtocolStrings.STOP_SERVER)) {
                     System.out.println("Trying to close server");
                 }
+
                 server.excludeClient(this);
-                server.sendMulticast(message.toUpperCase());
+                server.sendMulticast(login+":"+message.toUpperCase());
             }
         } finally {
             try {
@@ -72,4 +79,5 @@ public class ClientHandler implements Runnable {
         writer.println(message);
         writer.flush();
     }
+
 }
