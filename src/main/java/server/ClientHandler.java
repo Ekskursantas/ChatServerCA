@@ -52,16 +52,17 @@ public class ClientHandler implements Runnable {
                     String command = str[0];
                     String msg = str[1];
                     if (command.equals(ProtocolStrings.LOGIN)) {
-                        if (count > 0) {
-                            writer.println("You already logged in as: " + clientLogin);
-                        }
-                        if (!server.getLoginNames().contains(msg)) {
-                            clientLogin = msg;
-                            server.addToOnline(clientLogin);
-                            server.onlineNow(this);
-                            count++;
+                        if (count == 0) {
+                            if (!server.getLoginNames().contains(msg)) {
+                                clientLogin = msg;
+                                server.addToOnline(clientLogin);
+                                server.onlineNow(this);
+                                count++;
+                            } else {
+                                writer.println("LOGIN: " + msg + ", is already taken. Choose another one.");
+                            }
                         } else {
-                            writer.println("LOGIN: "+msg+", is already taken. Choose another one.");
+                            writer.println("You already logged in as: " + clientLogin);
                         }
 
                     } else if (server.getLoginNames().contains(command)) {
