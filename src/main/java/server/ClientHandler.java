@@ -64,11 +64,8 @@ public class ClientHandler implements Runnable {
                             writer.println("LOGIN: "+msg+", is already taken. Choose another one.");
                         }
 
-                    } else if (command.contains(":")) {
-                        String[] pmUser = message.split(":");
-                        String pmUserList = pmUser[0];
-                        String privateMessage = str[1];
-                        server.writeTo(pmUserList, privateMessage, this);
+                    } else if (server.getLoginNames().contains(command)) {
+                        server.writeTo(command, message, this);
                     } else {
                         writer.println("Command: '" + command + "' does not exist");
                     }
