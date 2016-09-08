@@ -24,27 +24,22 @@ public class ClientHandler implements Runnable {
     private final PrintWriter writer;
     private final ChatServer server;
     private final Scanner input;
-    private final String login;
 
+    private String clientLogin;
+    private int count = 0;
 
-    public ClientHandler(Socket socket, Scanner input, PrintWriter writer, ChatServer server, String login) {
+    public ClientHandler(Socket socket, Scanner input, PrintWriter writer, ChatServer server) {
         this.socket = socket;
         this.writer = writer;
         this.server = server;
         this.input = input;
-        this.login = login;
     }
 
     public static ClientHandler handle(Socket socket, ChatServer server) throws IOException {
         Scanner input = new Scanner(socket.getInputStream());
         PrintWriter writer = new PrintWriter(socket.getOutputStream(), true);
-        writer.println("---------------------------");
-        writer.println("---------Welcome-----------");
-        writer.println("LOGIN: ");
-        String login = input.nextLine();
-        writer.println("---------------------------");
-        writer.println("-*Logged in as "+login+"*-");
-        return new ClientHandler(socket, input, writer, server, login);
+
+        return new ClientHandler(socket, input, writer, server);
     }
 
     public void run() {
@@ -52,16 +47,42 @@ public class ClientHandler implements Runnable {
             while (true) {
                 String message = input.nextLine();
                 System.out.println("Received: " + message);
-                if (message == null) {
-                    continue;
-                } else if (message.equals(ProtocolStrings.STOP)) {
-                    break;
-                } else if (message.equals(ProtocolStrings.STOP_SERVER)) {
-                    System.out.println("Trying to close server");
-                }
+                if (message.contains(":")) {
+                    String[] str = message.split(":");
+                    String command = str[0];
+                    String msg = str[1];
+                    if (command.equals(ProtocolStrings.LOGIN)) {
+                        if (count > 0) {
+                            writer.println("You already logged in as: " + clientLogin);
+                        }
+                        if (!server.getLoginNames().contains(msg)) {
+                            clientLogin = msg;
+                            server.addToOnline(clientLogin);
+                            server.onlineNow(this);
+                            count++;
+                        } else {
+                            writer.println("LOGIN: "+msg+", is already taken. Choose another one.");
+                        }
 
-                server.excludeClient(this);
-                server.sendMulticast(login+":"+message.toUpperCase());
+                    } else if (command.contains(":")) {
+                        String[] pmUser = message.split(":");
+                        String pmUserList = pmUser[0];
+                        String privateMessage = str[1];
+                        server.writeTo(pmUserList, privateMessage, this);
+                    } else {
+                        writer.println("Command: '" + command + "' does not exist");
+                    }
+                } else {
+                    server.sendMulticast(clientLogin + ": " + message);
+                }
+//                    case ProtocolStrings.LOGOUT:
+//                        if (msg != null) {
+//                            writer.println("Wrong syntax. Should be empty after :");
+//                            break;
+//                        } else {
+//                            
+//                        }
+
             }
         } finally {
             try {
@@ -77,7 +98,17 @@ public class ClientHandler implements Runnable {
     public void sendMessage(String message) {
         System.out.println("Sending " + message);
         writer.println(message);
+        writer.println("");
+
         writer.flush();
+    }
+
+    public String commandMessages(String input) {
+        return "a";
+    }
+
+    public String getClientLogin() {
+        return clientLogin;
     }
 
 }

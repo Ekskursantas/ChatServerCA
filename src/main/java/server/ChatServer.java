@@ -5,6 +5,7 @@ import java.io.PrintWriter;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
@@ -22,8 +23,11 @@ public class ChatServer {
 
     private static final ExecutorService clientHandlers = Executors.newCachedThreadPool();
     private static final List<ClientHandler> clients = new CopyOnWriteArrayList<>();
+    private List<String> loginNames = new ArrayList();
+    public List<String> getLoginNames() {
+        return loginNames;
+    }
     private static boolean keepRunning = true;
-    private static ClientHandler clientToExclude;
     private static ServerSocket serverSocket;
     private String ip;
     private int port;
@@ -36,6 +40,8 @@ public class ChatServer {
 //            }
             String ip = "localhost";
             int port = 9999;
+//            String ip = args[0];
+//            int port = Integer.parseInt(args[1]);
             new ChatServer().runServer(ip, port);
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -74,19 +80,30 @@ public class ChatServer {
 //
 //            }
 //        });
-
         for (ClientHandler handler : clients) {
-            if(handler != clientToExclude)
+
             handler.sendMessage(message);
         }
     }
 
-    void excludeClient(ClientHandler client) {
-        clientToExclude = client;
-    }
-
     void removeHandler(ClientHandler handler) {
         clients.remove(handler);
+    }
+
+    void writeTo(String to, String message, ClientHandler client) {
+        for (ClientHandler handler : clients) {
+            if (handler.getClientLogin().equals(to)) {
+                handler.sendMessage(client.getClientLogin() + ": " + message);
+            }
+        }
+    }
+
+    void addToOnline(String clientLogin) {
+        loginNames.add(clientLogin);
+    }
+
+    void onlineNow(ClientHandler client) {
+        client.sendMessage("CLIENTLIST:"+loginNames.toString());
     }
 
 }
