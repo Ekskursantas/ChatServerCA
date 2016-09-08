@@ -65,6 +65,8 @@ public class ClientHandler implements Runnable {
                             writer.println("You already logged in as: " + clientLogin);
                         }
 
+                    } else if (command.equals(ProtocolStrings.LOGOUT)) {
+                        break;
                     } else if (server.getLoginNames().contains(command)) {
                         server.writeTo(command, message, this);
                     } else {
