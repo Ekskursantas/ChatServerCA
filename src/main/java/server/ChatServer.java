@@ -24,6 +24,7 @@ public class ChatServer {
     private static final ExecutorService clientHandlers = Executors.newCachedThreadPool();
     private static final List<ClientHandler> clients = new CopyOnWriteArrayList<>();
     private List<String> loginNames = new ArrayList();
+
     public List<String> getLoginNames() {
         return loginNames;
     }
@@ -98,12 +99,31 @@ public class ChatServer {
         }
     }
 
+    void writeToFew(String[] to, String message, ClientHandler client) {
+        for (String to1 : to) {
+
+            for (ClientHandler handler : clients) {
+
+                if (handler.getClientLogin().equals(to1)) {
+                    handler.sendMessage(client.getClientLogin() + ": " + message);
+                }
+
+            }
+        }
+    }
+
     void addToOnline(String clientLogin) {
         loginNames.add(clientLogin);
     }
 
     void onlineNow(ClientHandler client) {
-        client.sendMessage("CLIENTLIST:"+loginNames.toString());
+        client.sendMessage("CLIENTLIST:" + loginNames.toString());
+    }
+
+    void removeFromChat(ClientHandler client) {
+        loginNames.remove(client.getClientLogin());
+        System.out.println(client.getClientLogin() + ": left the chat");
+
     }
 
 }

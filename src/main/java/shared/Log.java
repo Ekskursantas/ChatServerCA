@@ -25,6 +25,7 @@ public class Log {
             logger.addHandler(fileHandler);
         } catch (IOException | SecurityException ex) {
             Logger.getLogger(Log.class.getName()).log(Level.SEVERE, null, ex);
+            
         }
     }
 

@@ -27,6 +27,7 @@ public class ClientHandler implements Runnable {
 
     private String clientLogin;
     private int count = 0;
+    private boolean emptyMessage = false;
 
     public ClientHandler(Socket socket, Scanner input, PrintWriter writer, ChatServer server) {
         this.socket = socket;
@@ -65,13 +66,21 @@ public class ClientHandler implements Runnable {
                             writer.println("You already logged in as: " + clientLogin);
                         }
 
-                    } else if (command.equals(ProtocolStrings.LOGOUT)) {
-                        break;
-                    } else if (server.getLoginNames().contains(command)) {
-                        server.writeTo(command, message, this);
+//                    } else if (command.equals(ProtocolStrings.LOGOUT)) {
+//                        server.removeFromChat(this);
+//                        System.out.println("a");
+                    } else if (server.getLoginNames().contains(command) && clientLogin != null) {
+                        server.writeTo(command, msg, this);
+                    } else if (command.contains(",")) {
+
+                        String[] users = command.split(",");
+                        server.writeToFew(users, msg, this);
+
                     } else {
                         writer.println("Command: '" + command + "' does not exist");
                     }
+                } else if (clientLogin == null) {
+                    writer.println("You need to log in first. Write 'LOGIN:USERNAME'");
                 } else {
                     server.sendMulticast(clientLogin + ": " + message);
                 }
@@ -88,9 +97,11 @@ public class ClientHandler implements Runnable {
             try {
                 socket.close();
                 server.removeHandler(this);
+                server.removeFromChat(this);
                 System.out.println("Closed a Connection");
             } catch (IOException ex) {
                 Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
+                System.out.println(ex);
             }
         }
     }
@@ -101,10 +112,6 @@ public class ClientHandler implements Runnable {
         writer.println("");
 
         writer.flush();
-    }
-
-    public String commandMessages(String input) {
-        return "a";
     }
 
     public String getClientLogin() {
