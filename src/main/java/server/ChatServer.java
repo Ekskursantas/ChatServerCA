@@ -73,7 +73,7 @@ public class ChatServer {
         }
     }
 
-    void sendMulticast(String message) {
+    void sendMulticast(ClientHandler client, String message) {
 
 //        clients.forEach(client -> client.sendMessage(message));
 //        clients.forEach(new Consumer<ClientHandler>() {
@@ -83,7 +83,8 @@ public class ChatServer {
 //        });
         for (ClientHandler handler : clients) {
 
-            handler.sendMessage(message);
+            handler.sendMessage("MSGRES:"+client.getClientLogin()+":"+message);
+            System.out.println(message);
         }
     }
 
@@ -91,21 +92,15 @@ public class ChatServer {
         clients.remove(handler);
     }
 
-    void writeTo(String to, String message, ClientHandler client) {
-        for (ClientHandler handler : clients) {
-            if (handler.getClientLogin().equals(to)) {
-                handler.sendMessage(client.getClientLogin() + ": " + message);
-            }
-        }
-    }
 
-    void writeToFew(String[] to, String message, ClientHandler client) {
+
+    void writeTo(String[] to, String message, ClientHandler client) {
         for (String to1 : to) {
 
             for (ClientHandler handler : clients) {
 
                 if (handler.getClientLogin().equals(to1)) {
-                    handler.sendMessage(client.getClientLogin() + ": " + message);
+                    handler.sendMessage("MSGRES:"+client.getClientLogin() + ": " + message);
                 }
 
             }

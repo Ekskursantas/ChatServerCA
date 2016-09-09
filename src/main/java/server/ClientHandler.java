@@ -27,7 +27,10 @@ public class ClientHandler implements Runnable {
 
     private String clientLogin;
     private int count = 0;
-    private boolean emptyMessage = false;
+    private boolean emptyMessage;
+    private String command;
+    private String msg;
+    private String receiver;
 
     public ClientHandler(Socket socket, Scanner input, PrintWriter writer, ChatServer server) {
         this.socket = socket;
@@ -46,13 +49,13 @@ public class ClientHandler implements Runnable {
     public void run() {
         try {
             while (true) {
+                emptyMessage = false;
                 String message = input.nextLine();
                 System.out.println("Received: " + message);
                 if (message.contains(":")) {
                     String[] str = message.split(":");
-                    String command = str[0];
-                    String msg = str[1];
-                    if (command.equals(ProtocolStrings.LOGIN)) {
+                    stringLength(str);
+                    if (command.equals(ProtocolStrings.LOGIN) && !emptyMessage) {
                         if (count == 0) {
                             if (!server.getLoginNames().contains(msg)) {
                                 clientLogin = msg;
@@ -66,24 +69,35 @@ public class ClientHandler implements Runnable {
                             writer.println("You already logged in as: " + clientLogin);
                         }
 
-//                    } else if (command.equals(ProtocolStrings.LOGOUT)) {
-//                        server.removeFromChat(this);
-//                        System.out.println("a");
-                    } else if (server.getLoginNames().contains(command) && clientLogin != null) {
-                        server.writeTo(command, msg, this);
-                    } else if (command.contains(",")) {
+                    } else if (clientLogin == null) {
+                        writer.println("You need to log in first. Write 'LOGIN:USERNAME'");
+                    } else if (command.equals(ProtocolStrings.MSG) && !emptyMessage) {
+                        if (str.length == 3) {
+                            String receivers[] = receiver.split(",");
+                            if (receivers.length == 1 && "".equals(receivers[0])) {
+                                server.sendMulticast(this, msg); //message to all
+                            } else {
+                                server.writeTo(receivers, msg, this);
+                            }
+                        } else {
+                            writer.println("The command structure is wrong try again 'MSG:RECEIVER:MESSAGE'");
+                        }
 
-                        String[] users = command.split(",");
-                        server.writeToFew(users, msg, this);
-
-                    } else {
+                    } else if (command.equals(ProtocolStrings.LOGOUT)) {
+                        break;
+                    } //                    else if (server.getLoginNames().contains(command) && clientLogin != null) {
+                    //                        server.writeTo(command, msg, this);
+                    //                    } else if (command.contains(",")) {
+                    //
+                    //                        String[] users = command.split(",");
+                    //                        server.writeToFew(users, msg, this);
+                    //
+                    //                    }
+                    else {
                         writer.println("Command: '" + command + "' does not exist");
                     }
                 } else if (clientLogin == null) {
                     writer.println("You need to log in first. Write 'LOGIN:USERNAME'");
-                } else {
-                    server.sendMulticast(clientLogin + ": " + message);
-                }
 //                    case ProtocolStrings.LOGOUT:
 //                        if (msg != null) {
 //                            writer.println("Wrong syntax. Should be empty after :");
@@ -92,6 +106,7 @@ public class ClientHandler implements Runnable {
 //                            
 //                        }
 
+                }
             }
         } finally {
             try {
@@ -116,6 +131,30 @@ public class ClientHandler implements Runnable {
 
     public String getClientLogin() {
         return clientLogin;
+    }
+
+    private void stringLength(String[] str) {
+        switch (str.length) {
+            case 1:
+                command = str[0];
+                emptyMessage = true;
+                break;
+            case 2:
+                command = str[0];
+                msg = str[1];
+                System.out.println("2");
+                break;
+            case 3:
+                command = str[0];
+                receiver = str[1];
+                msg = str[2];
+                System.out.println("3");
+                break;
+            default:
+                writer.println("TOO MANY ARGUMENTS! MAX THREE ARGUMENTS 'TEXT:TEXT:TEXT'");
+                break;
+        }
+
     }
 
 }
