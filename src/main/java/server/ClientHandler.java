@@ -60,17 +60,17 @@ public class ClientHandler implements Runnable {
                             if (!server.getLoginNames().contains(msg)) {
                                 clientLogin = msg;
                                 server.addToOnline(clientLogin);
-                                server.onlineNow(this);
+                                server.onlineNow();
                                 count++;
                             } else {
-                                writer.println("LOGIN: " + msg + ", is already taken. Choose another one.");
+//                                writer.println("LOGIN: " + msg + ", is already taken. Choose another one.");
                             }
                         } else {
-                            writer.println("You already logged in as: " + clientLogin);
+//                            writer.println("You already logged in as: " + clientLogin);
                         }
 
                     } else if (clientLogin == null) {
-                        writer.println("You need to log in first. Write 'LOGIN:USERNAME'");
+//                        writer.println("You need to log in first. Write 'LOGIN:USERNAME'");
                     } else if (command.equals(ProtocolStrings.MSG) && !emptyMessage) {
                         if (str.length == 3) {
                             String receivers[] = receiver.split(",");
@@ -80,17 +80,17 @@ public class ClientHandler implements Runnable {
                                 server.writeTo(receivers, msg, this);
                             }
                         } else {
-                            writer.println("The command structure is wrong try again 'MSG:RECEIVER:MESSAGE'");
+//                            writer.println("The command structure is wrong try again 'MSG:RECEIVER:MESSAGE'");
                         }
 
                     } else if (command.equals(ProtocolStrings.LOGOUT)) {
                         break;
                     } 
                     else {
-                        writer.println("Command: '" + command + "' does not exist");
+//                        writer.println("Command: '" + command + "' does not exist");
                     }
                 } else if (clientLogin == null) {
-                    writer.println("You need to log in first. Write 'LOGIN:USERNAME'");
+//                    writer.println("You need to log in first. Write 'LOGIN:USERNAME'");
 
 
                 }
@@ -129,16 +129,14 @@ public class ClientHandler implements Runnable {
             case 2:
                 command = str[0];
                 msg = str[1];
-                System.out.println("2");
                 break;
             case 3:
                 command = str[0];
                 receiver = str[1];
                 msg = str[2];
-                System.out.println("3");
                 break;
             default:
-                writer.println("TOO MANY ARGUMENTS! MAX THREE ARGUMENTS 'TEXT:TEXT:TEXT'");
+//                writer.println("TOO MANY ARGUMENTS! MAX THREE ARGUMENTS 'TEXT:TEXT:TEXT'");
                 break;
         }
 

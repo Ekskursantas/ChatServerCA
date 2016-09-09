@@ -6,6 +6,7 @@ import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
@@ -40,7 +41,7 @@ public class ChatServer {
 //                throw new IllegalArgumentException("Error: Use like: java -jar ChatServer.jar <ip> <port>");
 //            }
             String ip = args[0];
-            int port = 9999;
+            int port = Integer.parseInt(args[1]);
 //            String ip = args[0];
 //            int port = Integer.parseInt(args[1]);
             new ChatServer().runServer(ip, port);
@@ -83,7 +84,7 @@ public class ChatServer {
 //        });
         for (ClientHandler handler : clients) {
 
-            handler.sendMessage("MSGRES:"+client.getClientLogin()+":"+message);
+            handler.sendMessage("MSGRES:" + client.getClientLogin() + ":" + message);
             System.out.println(message);
         }
     }
@@ -92,15 +93,13 @@ public class ChatServer {
         clients.remove(handler);
     }
 
-
-
     void writeTo(String[] to, String message, ClientHandler client) {
         for (String to1 : to) {
 
             for (ClientHandler handler : clients) {
 
                 if (handler.getClientLogin().equals(to1)) {
-                    handler.sendMessage("MSGRES:"+client.getClientLogin() + ": " + message);
+                    handler.sendMessage("MSGRES:" + client.getClientLogin() + ":" + message);
                 }
 
             }
@@ -111,13 +110,23 @@ public class ChatServer {
         loginNames.add(clientLogin);
     }
 
-    void onlineNow(ClientHandler client) {
-        client.sendMessage("CLIENTLIST:" + loginNames.toString());
+    void onlineNow() {
+
+        for (ClientHandler handler : clients) {
+            if (handler.getClientLogin() != null) {
+                handler.sendMessage("CLIENTLIST:" + Arrays.toString(loginNames.toArray()).replace("[", "").replace("]", "").replace(" ", ""));
+            }
+        }
     }
 
     void removeFromChat(ClientHandler client) {
         loginNames.remove(client.getClientLogin());
-        System.out.println(client.getClientLogin() + ": left the chat");
+
+        for (ClientHandler handler : clients) {
+            if (handler.getClientLogin() != null) {
+                handler.sendMessage("CLIENTLIST:" + Arrays.toString(loginNames.toArray()).replace("[", "").replace("]", "").replace(" ", ""));
+            }
+        }
 
     }
 
