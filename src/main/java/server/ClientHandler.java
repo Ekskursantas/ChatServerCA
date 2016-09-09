@@ -85,26 +85,13 @@ public class ClientHandler implements Runnable {
 
                     } else if (command.equals(ProtocolStrings.LOGOUT)) {
                         break;
-                    } //                    else if (server.getLoginNames().contains(command) && clientLogin != null) {
-                    //                        server.writeTo(command, msg, this);
-                    //                    } else if (command.contains(",")) {
-                    //
-                    //                        String[] users = command.split(",");
-                    //                        server.writeToFew(users, msg, this);
-                    //
-                    //                    }
+                    } 
                     else {
                         writer.println("Command: '" + command + "' does not exist");
                     }
                 } else if (clientLogin == null) {
                     writer.println("You need to log in first. Write 'LOGIN:USERNAME'");
-//                    case ProtocolStrings.LOGOUT:
-//                        if (msg != null) {
-//                            writer.println("Wrong syntax. Should be empty after :");
-//                            break;
-//                        } else {
-//                            
-//                        }
+
 
                 }
             }
