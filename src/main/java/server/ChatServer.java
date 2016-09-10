@@ -40,10 +40,10 @@ public class ChatServer {
 //            if (args.length != 2) {
 //                throw new IllegalArgumentException("Error: Use like: java -jar ChatServer.jar <ip> <port>");
 //            }
+//            String ip = "localhost";
+//            int port = 9999;
             String ip = args[0];
             int port = Integer.parseInt(args[1]);
-//            String ip = args[0];
-//            int port = Integer.parseInt(args[1]);
             new ChatServer().runServer(ip, port);
         } catch (Exception e) {
             System.out.println(e.getMessage());

@@ -84,6 +84,7 @@ public class ClientHandler implements Runnable {
                         }
 
                     } else if (command.equals(ProtocolStrings.LOGOUT)) {
+                        System.out.println(clientLogin+" requests for a connection close");
                         break;
                     } 
                     else {
@@ -100,7 +101,7 @@ public class ClientHandler implements Runnable {
                 socket.close();
                 server.removeHandler(this);
                 server.removeFromChat(this);
-                System.out.println("Closed a Connection");
+                System.out.println("Closed a connection for "+clientLogin);
             } catch (IOException ex) {
                 Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
                 System.out.println(ex);
@@ -111,7 +112,6 @@ public class ClientHandler implements Runnable {
     public void sendMessage(String message) {
         System.out.println("Sending " + message);
         writer.println(message);
-        writer.println("");
 
         writer.flush();
     }
