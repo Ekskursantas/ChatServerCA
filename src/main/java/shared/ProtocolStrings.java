@@ -1,3 +1,8 @@
+//***************************************
+
+// Class made by Zyggi(Zygimantas Pranka)
+
+//***************************************
 package shared;
 
 public class ProtocolStrings {

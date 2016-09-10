@@ -1,3 +1,8 @@
+//***************************************
+
+// Class made by Zyggi(Zygimantas Pranka)
+
+//***************************************
 package server;
 
 import java.io.IOException;
