@@ -14,7 +14,7 @@ import java.util.logging.SimpleFormatter;
 
 public class Log {
 
-    private static String logFileName = "myLogger";
+    public static String logFileName = "myLogger";
 
     public static void setLogger(String fileName, String logName) {
         try {

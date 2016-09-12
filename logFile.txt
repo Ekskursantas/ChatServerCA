@@ -1,0 +1,12 @@
+Sep 12, 2016 3:22:27 PM server.ChatServer main
+INFO: Starting the Server
+Sep 12, 2016 3:23:02 PM server.ChatServer runServer
+INFO: Client connected
+Sep 12, 2016 3:23:07 PM server.ChatServer onlineNow
+INFO: CLIENTLIST:ZYGI
+Sep 12, 2016 3:23:12 PM server.ChatServer sendMulticast
+INFO: MSGRES:ZYGI:HELLO
+Sep 12, 2016 3:23:16 PM server.ChatServer sendMulticast
+INFO: MSGRES:ZYGI:WHATSUP
+Sep 12, 2016 3:23:21 PM server.ChatServer writeTo
+INFO: MSGRES:ZYGI:HELLO

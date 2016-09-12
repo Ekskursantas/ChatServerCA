@@ -42,13 +42,14 @@ public class ChatServer {
     public static void main(String[] args) {
         try {
             Log.setLogger("logFile.txt", "ServerLog");
+            Logger.getLogger(Log.logFileName).log(Level.INFO, "Starting the Server");
 //            if (args.length != 2) {
 //                throw new IllegalArgumentException("Error: Use like: java -jar ChatServer.jar <ip> <port>");
 //            }
 //            String ip = "localhost";
 //            int port = 9999;
-            String ip = args[0];
-            int port = Integer.parseInt(args[1]);
+            String ip = "localhost";
+            int port = 9999;
             new ChatServer().runServer(ip, port);
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -70,6 +71,7 @@ public class ChatServer {
             do {
                 Socket socket = serverSocket.accept(); //Important Blocking call
                 System.out.println("Connected to a client");
+                Logger.getLogger(Log.logFileName).log(Level.INFO, "Client connected");
                 ClientHandler clientHandler = ClientHandler.handle(socket, this);
                 clients.add(clientHandler);
                 clientHandlers.submit(clientHandler);
@@ -90,6 +92,7 @@ public class ChatServer {
         for (ClientHandler handler : clients) {
 
             handler.sendMessage("MSGRES:" + client.getClientLogin() + ":" + message);
+            Logger.getLogger(Log.logFileName).log(Level.INFO, "MSGRES:" + client.getClientLogin() + ":" + message);
             System.out.println(message);
         }
     }
@@ -105,6 +108,7 @@ public class ChatServer {
 
                 if (handler.getClientLogin().equals(to1)) {
                     handler.sendMessage("MSGRES:" + client.getClientLogin() + ":" + message);
+                    Logger.getLogger(Log.logFileName).log(Level.INFO, "MSGRES:" + client.getClientLogin() + ":" + message);
                 }
 
             }
@@ -120,6 +124,7 @@ public class ChatServer {
         for (ClientHandler handler : clients) {
             if (handler.getClientLogin() != null) {
                 handler.sendMessage("CLIENTLIST:" + Arrays.toString(loginNames.toArray()).replace("[", "").replace("]", "").replace(" ", ""));
+                Logger.getLogger(Log.logFileName).log(Level.INFO, "CLIENTLIST:" + Arrays.toString(loginNames.toArray()).replace("[", "").replace("]", "").replace(" ", ""));
             }
         }
     }
@@ -130,6 +135,7 @@ public class ChatServer {
         for (ClientHandler handler : clients) {
             if (handler.getClientLogin() != null) {
                 handler.sendMessage("CLIENTLIST:" + Arrays.toString(loginNames.toArray()).replace("[", "").replace("]", "").replace(" ", ""));
+                Logger.getLogger(Log.logFileName).log(Level.INFO, "CLIENTLIST:" + Arrays.toString(loginNames.toArray()).replace("[", "").replace("]", "").replace(" ", ""));
             }
         }
 
